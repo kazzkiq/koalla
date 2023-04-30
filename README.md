@@ -3,7 +3,7 @@
   <br><br><br>
   <b>Koalla CLI 🐨</b>
   <br>
-  CLI for building Koalla backends.
+   A CLI for minimalist back-end projects.
 </p>
 <br><br>
 
