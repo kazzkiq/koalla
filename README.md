@@ -126,4 +126,4 @@ This means Koalla wouldn't be possible without the great efforts of those tools:
 - [uvu](https://github.com/lukeed/uvu)
 - [sade](https://github.com/lukeed/sade)
 - [swagger-autogen](https://github.com/davibaltar/swagger-autogen)
-- and [much others](https://github.com/kazzkiq/koalla-skeleton/blob/main/package.json#L33).
+- and [much more](https://github.com/kazzkiq/koalla-skeleton/blob/main/package.json#L33).
