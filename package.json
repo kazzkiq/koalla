@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "CLI for building Koalla backends.",
   "main": "index.js",
+  "bin": {
+    "koalla": "./bin/koalla"
+  },
   "scripts": {
     "build": "tsc --build && tsc-alias && npm run swagger:generate"
   },
@@ -11,9 +14,11 @@
     "url": "git+https://github.com/kazzkiq/koalla-cli.git"
   },
   "keywords": [
+    "koalla",
     "koa",
     "backend",
-    "api"
+    "api",
+    "cli"
   ],
   "author": "Claudio Holanda Jr.",
   "license": "MIT",
@@ -22,7 +27,7 @@
   },
   "homepage": "https://github.com/kazzkiq/koa-blueprint#readme",
   "dependencies": {
+    "sade": "^1.8.1",
     "uvu": "^0.5.6"
-  },
-  "devDependencies": {}
+  }
 }
