@@ -1,3 +1,84 @@
 #!/usr/bin/env node
 
-console.log("Hello from Koalla!");
+const sade = require("sade");
+const { exec, execSync } = require("child_process");
+
+const prog = sade("koalla");
+const { version } = require("../package.json");
+const { red, cyan, white } = require("console-log-colors");
+
+prog.version(version);
+
+prog
+  .command("new <directory>")
+  .describe(
+    "Scaffold a new project in the given directory. The directory must be ideally empty."
+  )
+  .option(
+    "-o, --overwrite",
+    "Koalla overwrites any files that already exist in the directory. Be aware."
+  )
+  .example("new ./my-project")
+  .action((directory, opts) => {
+    try {
+      execSync(`mkdir -p ${directory}`);
+    } catch (e) {
+      console.log(
+        `Koalla: ${red(` could not create the directory ${directory}.`)}`
+      );
+      console.log(e);
+      return;
+    }
+
+    console.log("");
+    console.log(`  Koalla: ${cyan("Creating project...")}`);
+
+    let degitCommand = `npx -y degit github:kazzkiq/koalla`;
+
+    if (opts.o) {
+      degitCommand = `npx -y degit github:kazzkiq/koalla --force`;
+    }
+
+    exec(`cd ${directory} && ${degitCommand}`, (err, stdout, stderr) => {
+      if (err) {
+        if (err.message.includes("directory is not empty")) {
+          console.log(
+            `  Koalla: ${red(
+              `The directory you're trying to use (${white(
+                directory
+              )}) already exists and is not empty.
+          Check your directory or use ${cyan("--overwrite")}`
+            )}`
+          );
+          console.log("");
+        } else {
+          console.error(`Error: ${err}`);
+        }
+
+        return;
+      }
+
+      if (
+        stdout.includes("cloned kazzkiq/koalla") ||
+        stderr.includes("cloned kazzkiq/koalla")
+      ) {
+        console.log(`  Koalla: ${cyan("Success! 🌿")}`);
+        console.log(cyan(""));
+        console.log("  Next steps:");
+        console.log(cyan(`  cd ${directory}`));
+        console.log(cyan(`  npm i`));
+        console.log(cyan(`  npm run dev`));
+        console.log("");
+        console.log(`  Open in browser: http://localhost:4000`);
+        console.log(cyan(``));
+        console.log(`  And that's it! Time to rock your API! 🐨`);
+        console.log(cyan(``));
+        console.log(`  If you need help for creating routes simply run:`);
+        console.log(cyan(`  npx koalla gen --help`));
+        console.log("");
+        console.log("");
+      }
+    });
+  });
+
+prog.parse(process.argv);
