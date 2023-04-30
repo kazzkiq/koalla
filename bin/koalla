@@ -2,6 +2,7 @@
 
 const sade = require("sade");
 const { exec, execSync } = require("child_process");
+const fs = require("fs");
 
 const prog = sade("koalla");
 const { version } = require("../package.json");
@@ -10,7 +11,7 @@ const { red, cyan, white } = require("console-log-colors");
 prog.version(version);
 
 prog
-  .command("new <directory>")
+  .command("init <directory>")
   .describe(
     "Scaffold a new project in the given directory. The directory must be ideally empty."
   )
@@ -18,7 +19,7 @@ prog
     "-o, --overwrite",
     "Koalla overwrites any files that already exist in the directory. Be aware."
   )
-  .example("new ./my-project")
+  .example("init ./my-project")
   .action((directory, opts) => {
     try {
       execSync(`mkdir -p ${directory}`);
@@ -79,6 +80,63 @@ prog
         console.log("");
       }
     });
+  });
+
+prog
+  .command("new <action> <name>")
+  .describe("Create a new route, or lib.")
+  .option(
+    "-o, --overwrite",
+    "Koalla overwrites any files that already exist in the directory. Be aware."
+  )
+  .example("new route user-orders")
+  .example("new lib color-shuffle")
+  .action((action, name, opts) => {
+    if (!["route", "lib"].includes(action)) {
+      console.log(
+        `  Koalla: ${red(
+          `You must use either ${white("route")} or ${white(
+            "lib"
+          )} as the first command.`
+        )}`
+      );
+      console.log("");
+      return;
+    }
+
+    if (!name.match(/^[a-z]+[a-z-]+[a-z]+$/)) {
+      console.log(
+        `  Koalla: ${red(
+          `Your file must use only ${white(
+            "lower-case letters [a-z]"
+          )} and ${white("dashes (-)")}.`
+        )}`
+      );
+      console.log("");
+      return;
+    }
+
+    const directoryToLook = (() => {
+      if (action === "route") {
+        return "endpoints";
+      } else if (action === "lib") {
+        return "commons";
+      }
+    })();
+
+    if (fs.existsSync(`./${directoryToLook}/${name}.ts`)) {
+      console.log(
+        `  Koalla: ${red(
+          `The file ${white(
+            `${name}`.ts
+          )} already exists. Choose a different name.`
+        )}`
+      );
+      return;
+    }
+
+    const exists = fs.read;
+    console.log(action, name, opts);
   });
 
 prog.parse(process.argv);
