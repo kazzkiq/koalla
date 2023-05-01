@@ -75,12 +75,10 @@ Routes are where you'll find the path that runs your endpoints. A typical file l
 ```ts
 import Koa from "koa";
 import Router, { RouterContext } from "@koa/router";
-
 import { ExampleEndpoints } from "@/endpoints/example";
 
 const router = new Router();
-
-router.get("/", ApiStatusEndpoints.read);
+router.get("/", ExampleEndpoints.read);
 
 export default router.routes();
 ```
@@ -91,11 +89,9 @@ Alternatively, you can enable swagger docs by adding a few comments:
 ```ts
 import Koa from "koa";
 import Router, { RouterContext } from "@koa/router";
-
 import { ExampleEndpoints } from "@/endpoints/example";
 
 const router = new Router();
-
 router.get(
   "/",
   async (ctx: Koa.BaseContext & RouterContext, next: Koa.Next) => {
