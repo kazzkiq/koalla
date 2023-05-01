@@ -6,7 +6,7 @@ import { {%TAG_CODE_NAME%}Endpoints } from "@/endpoints/{%TAG_FILE_NAME%}";
 const router = new Router();
 
 router.get(
-  "/",
+  "/{%TAG_FILE_NAME%}",
   async (ctx: Koa.BaseContext & RouterContext, next: Koa.Next) => {
     /*
     Endpoint documentation:
