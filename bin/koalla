@@ -10,6 +10,12 @@ const { version } = require("../package.json");
 const { red, cyan, white } = require("console-log-colors");
 
 function toCamelCase(str) {
+  return str.replace(/-([a-z])/g, function (match, letter) {
+    return letter.toUpperCase();
+  });
+}
+
+function toFunctionName(str) {
   return str
     .replace(/-([a-z])/g, function (match, letter) {
       return letter.toUpperCase();
@@ -168,7 +174,7 @@ prog
         fs
           .readFileSync(`${templatesPath}/route.ts.template`, "utf8")
           .replace(/{%TAG_FILE_NAME%}/g, name)
-          .replace(/{%TAG_CODE_NAME%}/g, toCamelCase(name))
+          .replace(/{%TAG_CODE_NAME%}/g, toFunctionName(name))
           .replace(/{%TAG_NAME%}/g, toNameStyle(name))
       );
 
@@ -177,14 +183,24 @@ prog
         fs
           .readFileSync(`${templatesPath}/endpoint.ts.template`, "utf8")
           .replace(/{%TAG_FILE_NAME%}/g, name)
-          .replace(/{%TAG_CODE_NAME%}/g, toCamelCase(name))
+          .replace(/{%TAG_CODE_NAME%}/g, toFunctionName(name))
           .replace(/{%TAG_NAME%}/g, toNameStyle(name))
+      );
+
+      fs.writeFileSync(
+        `src/routes/_routes.ts`,
+        fs
+          .readFileSync(`src/routes/_routes.ts`, "utf8")
+          .replace(
+            /\.use\(([a-zA-Z]+)\)\;/g,
+            `.use($1)\n  .use(${toCamelCase(name)});`
+          )
       );
 
       console.log("");
       console.log(
         `  Koalla: ${cyan(
-          `Route ${white(`${toCamelCase(name)}`)} sucessfully created.`
+          `Route ${white(`${toFunctionName(name)}`)} sucessfully created.`
         )}`
       );
       console.log(
@@ -202,14 +218,14 @@ prog
         fs
           .readFileSync(`${templatesPath}/lib.ts.template`, "utf8")
           .replace(/{%TAG_FILE_NAME%}/g, name)
-          .replace(/{%TAG_CODE_NAME%}/g, toCamelCase(name))
+          .replace(/{%TAG_CODE_NAME%}/g, toFunctionName(name))
           .replace(/{%TAG_NAME%}/g, toNameStyle(name))
       );
 
       console.log("");
       console.log(
         `  Koalla: ${cyan(
-          `Lib ${white(`${toCamelCase(name)}`)} sucessfully created.`
+          `Lib ${white(`${toFunctionName(name)}`)} sucessfully created.`
         )}`
       );
       console.log(
