@@ -195,6 +195,12 @@ prog
             /\.use\(([a-zA-Z]+)\)\;/g,
             `.use($1)\n  .use(${toCamelCase(name)});`
           )
+          .replace(
+            "const routes = new Router();",
+            `import ${toCamelCase(
+              name
+            )} from "@/routes/${name}";\n\nconst routes = new Router();`
+          )
       );
 
       console.log("");
