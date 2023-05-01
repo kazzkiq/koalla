@@ -22,7 +22,7 @@ router.get(
     (end swagger docs)
     */
 
-    return {%TAG_CODE_NAME%}.read.call(this, ctx, next);
+    return {%TAG_CODE_NAME%}Endpoints.read.call(this, ctx, next);
   }
 );
 
