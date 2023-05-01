@@ -3,10 +3,35 @@
 const sade = require("sade");
 const { exec, execSync } = require("child_process");
 const fs = require("fs");
+const path = require("path");
 
 const prog = sade("koalla");
 const { version } = require("../package.json");
 const { red, cyan, white } = require("console-log-colors");
+
+function toCamelCase(str) {
+  return str
+    .replace(/-([a-z])/g, function (match, letter) {
+      return letter.toUpperCase();
+    })
+    .replace(/^[a-z]/, function (match) {
+      return match.toUpperCase();
+    });
+}
+
+function toNameStyle(str) {
+  return str
+    .replace(/-([a-z])/g, function (match, letter) {
+      return letter.toUpperCase();
+    })
+    .replace(/^[a-z]/, function (match) {
+      return match.toUpperCase();
+    })
+    .replace(/([A-Z])/g, function (match, letter) {
+      return " " + letter;
+    })
+    .trim();
+}
 
 prog.version(version);
 
@@ -34,10 +59,10 @@ prog
     console.log("");
     console.log(`  Koalla: ${cyan("Creating project...")}`);
 
-    let degitCommand = `npx -y degit github:kazzkiq/koalla`;
+    let degitCommand = `npx -y degit github:kazzkiq/koalla-skeleton`;
 
     if (opts.o) {
-      degitCommand = `npx -y degit github:kazzkiq/koalla --force`;
+      degitCommand = `npx -y degit github:kazzkiq/koalla-skeleton --force`;
     }
 
     exec(`cd ${directory} && ${degitCommand}`, (err, stdout, stderr) => {
@@ -92,6 +117,8 @@ prog
   .example("new route user-orders")
   .example("new lib color-shuffle")
   .action((action, name, opts) => {
+    const templatesPath = path.join(__dirname, "..", "templates");
+
     if (!["route", "lib"].includes(action)) {
       console.log(
         `  Koalla: ${red(
@@ -135,8 +162,61 @@ prog
       return;
     }
 
-    const exists = fs.read;
-    console.log(action, name, opts);
+    if (action === "route") {
+      fs.writeFileSync(
+        `src/routes/${name}.ts`,
+        fs
+          .readFileSync(`${templatesPath}/route.ts.template`, "utf8")
+          .replace(/{%TAG_FILE_NAME%}/g, name)
+          .replace(/{%TAG_CODE_NAME%}/g, toCamelCase(name))
+          .replace(/{%TAG_NAME%}/g, toNameStyle(name))
+      );
+
+      fs.writeFileSync(
+        `src/endpoints/${name}.ts`,
+        fs
+          .readFileSync(`${templatesPath}/endpoint.ts.template`, "utf8")
+          .replace(/{%TAG_FILE_NAME%}/g, name)
+          .replace(/{%TAG_CODE_NAME%}/g, toCamelCase(name))
+          .replace(/{%TAG_NAME%}/g, toNameStyle(name))
+      );
+
+      console.log("");
+      console.log(
+        `  Koalla: ${cyan(
+          `Route ${white(`${toCamelCase(name)}`)} sucessfully created.`
+        )}`
+      );
+      console.log(
+        `          ${cyan(`Files created: ${white(`src/routes/${name}.ts`)}`)}`
+      );
+      console.log(
+        `          ${cyan(
+          `               ${white(`src/endpoints/${name}.ts`)}`
+        )}`
+      );
+      console.log("");
+    } else if (action === "lib") {
+      fs.writeFileSync(
+        `src/commons/${name}.ts`,
+        fs
+          .readFileSync(`${templatesPath}/lib.ts.template`, "utf8")
+          .replace(/{%TAG_FILE_NAME%}/g, name)
+          .replace(/{%TAG_CODE_NAME%}/g, toCamelCase(name))
+          .replace(/{%TAG_NAME%}/g, toNameStyle(name))
+      );
+
+      console.log("");
+      console.log(
+        `  Koalla: ${cyan(
+          `Lib ${white(`${toCamelCase(name)}`)} sucessfully created.`
+        )}`
+      );
+      console.log(
+        `          ${cyan(`File created: ${white(`src/commons/${name}.ts`)}`)}`
+      );
+      console.log("");
+    }
   });
 
 prog.parse(process.argv);

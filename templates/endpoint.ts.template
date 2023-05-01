@@ -1,0 +1,12 @@
+import { RouterContext } from "@koa/router";
+import Koa from "koa";
+
+export const {%TAG_CODE_NAME%}Endpoints = {
+  async read(ctx: Koa.Context & RouterContext, next: Koa.Next) {
+    ctx.status = 200;
+    ctx.body = {
+      message: "Hello from {%TAG_FILE_NAME%}",
+    };
+    next();
+  },
+};
